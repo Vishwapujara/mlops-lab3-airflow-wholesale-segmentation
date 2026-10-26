@@ -199,6 +199,28 @@ docker compose exec airflow-scheduler airflow dags trigger wholesale_segmentatio
 docker compose exec airflow-scheduler airflow dags list-runs wholesale_segmentation
 ```
 
+### Screenshots
+
+**Both DAGs** – ingestion on a weekly cron, segmentation scheduled on the `wholesale_clean_data` asset (the red bar is the bad-data run from 3b):
+
+![DAGs list](screenshots/01_dags_list.png)
+
+**Data quality branch (3b)** – checks failed, so `route` skipped `publish_clean` and sent the run to `quarantine`, which failed it on purpose:
+
+![Ingest branch](screenshots/02_ingest_branch.png)
+
+**Asset-triggered segmentation run (3a)** – started by the asset event, with one mapped `train_kmeans` task per k, labelled `k=2 … k=10`:
+
+![Asset-triggered run](screenshots/03_asset_triggered_run.png)
+
+**`model_selection` task group and mapped tasks** – `candidate_ks → train_kmeans [ ] → select_k`; here the elbow run from 3c with `k_max = 8`:
+
+![Task group and mapped tasks](screenshots/04_task_group_mapped.png)
+
+**Asset lineage** – `wholesale_ingest` produces `wholesale_clean_data`, which schedules `wholesale_segmentation`; the event shows the run it triggered:
+
+![Asset lineage](screenshots/05_asset_lineage.png)
+
 ## 4. Stop and clean up
 
 ```bash
