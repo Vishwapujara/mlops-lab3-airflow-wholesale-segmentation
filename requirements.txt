@@ -1,0 +1,6 @@
+# Packages the DAGs need inside the Airflow image (versions pinned by Airflow's constraints file).
+pandas
+scikit-learn
+matplotlib
+requests
+kneed==0.9.0
